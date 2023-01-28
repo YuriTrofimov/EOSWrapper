@@ -17,6 +17,11 @@ class EOSWRAPPER_API UEOWGameInstanceSubsystem : public UGameInstanceSubsystem
 	GENERATED_BODY()
 
 public:
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnTokenValidationComplete, bool, bValid, const FString&, Token);
+
+	UPROPERTY(BlueprintAssignable)
+	FOnTokenValidationComplete OnTokenValidationComplete;
+
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
 
@@ -27,7 +32,10 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Online|Game|Login")
 	void IsUserLoggedIn(bool& LoggedIn, int32 LocalUserNum = 0) const;
 
-private:
-	/** Reference to the main EOS subsystem */
-	FEOSWrapperSubsystem* EOSSubsystem;
+	UFUNCTION(BlueprintPure, Category = "Online|Game|Session")
+	void GetUserToken(int32 LocalUserNum, FString& Token, FString& UserAccountString);
+
+	void ValidateUserAuthToken(const FString& Token, const FString& AccountIDString) const;
+protected:
+	class IOnlineSubsystem* OnlineSubsystem;
 };

@@ -2,12 +2,14 @@
 // Source Code:     https://github.com/YuriTrofimov/EOSWrapper
 
 #include "EOSWrapperModule.h"
-
 #include "EOSWrapperSettings.h"
 #include "EOSWrapperSubsystem.h"
 #include "EOSWrapperTypes.h"
-#include "ISettingsModule.h"
 #include "Misc/LazySingleton.h"
+
+#if WITH_EDITOR
+#include "ISettingsModule.h"
+#endif
 
 #define LOCTEXT_NAMESPACE "EOSWrapper"
 
@@ -17,9 +19,13 @@
 class FOnlineFactoryEOSWrapper : public IOnlineFactory
 {
 public:
-	FOnlineFactoryEOSWrapper() {}
+	FOnlineFactoryEOSWrapper()
+	{
+	}
 
-	virtual ~FOnlineFactoryEOSWrapper() {}
+	virtual ~FOnlineFactoryEOSWrapper()
+	{
+	}
 
 	virtual IOnlineSubsystemPtr CreateSubsystem(FName InstanceName)
 	{

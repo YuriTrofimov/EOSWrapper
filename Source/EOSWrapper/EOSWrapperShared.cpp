@@ -5,6 +5,7 @@
 #include "eos_auth_types.h"
 #include "eos_friends_types.h"
 #include "eos_presence_types.h"
+#include "eos_common.h"
 #include "eos_types.h"
 
 FString LexToString(const EOS_EResult EosResult)

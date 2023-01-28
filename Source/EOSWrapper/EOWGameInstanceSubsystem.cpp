@@ -9,25 +9,52 @@ void UEOWGameInstanceSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 
-	const FEOSWrapperModule* WrapperModule = static_cast<FEOSWrapperModule*>(FModuleManager::Get().GetModule("EOSWrapper"));
-	if (!WrapperModule) return;
-
-	//	EOSSubsystem = WrapperModule->EOSWrapperSubsystem.Get();
+	OnlineSubsystem = IOnlineSubsystem::Get();
+	if (!OnlineSubsystem) return;
 }
 
 void UEOWGameInstanceSubsystem::Deinitialize()
 {
 	Super::Deinitialize();
-	EOSSubsystem = nullptr;
+	OnlineSubsystem = nullptr;
 }
 
 void UEOWGameInstanceSubsystem::DeveloperLogin(FString Host, FString Account)
 {
-	if (!EOSSubsystem) return;
 }
 
 void UEOWGameInstanceSubsystem::IsUserLoggedIn(bool& LoggedIn, int32 LocalUserNum) const
 {
 	LoggedIn = false;
-	if (!EOSSubsystem) return;
+}
+
+
+void UEOWGameInstanceSubsystem::GetUserToken(int32 LocalUserNum, FString& Token, FString& UserAccountString)
+{
+	if (!OnlineSubsystem) return;
+
+	const IOnlineIdentityPtr IdentityInterface = OnlineSubsystem->GetIdentityInterface();
+	if (!IdentityInterface) return;
+
+	if (FEOSWrapperUserManager* UserManager = static_cast<FEOSWrapperUserManager*>(IdentityInterface.Get()))
+	{
+		UserManager->GetUserAuthToken(LocalUserNum, Token, UserAccountString);
+	}
+}
+
+void UEOWGameInstanceSubsystem::ValidateUserAuthToken(const FString& Token, const FString& AccountIDString) const
+{
+	if (!OnlineSubsystem) return;
+
+	const IOnlineIdentityPtr IdentityInterface = OnlineSubsystem->GetIdentityInterface();
+	if (!IdentityInterface) return;
+
+	if (FEOSWrapperUserManager* UserManager = static_cast<FEOSWrapperUserManager*>(IdentityInterface.Get()))
+	{
+		TFunction<void(FString InToken, EOS_EpicAccountId AccountID, bool bSuccess)> Callback = [this, Token, AccountIDString](FString InToken, EOS_EpicAccountId AccountID, bool bSuccess)
+		{
+			OnTokenValidationComplete.Broadcast(bSuccess, Token);
+		};
+		UserManager->ValidateUserAuthToken(Token, AccountIDString, Callback);
+	}
 }

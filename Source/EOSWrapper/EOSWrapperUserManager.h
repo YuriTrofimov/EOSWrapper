@@ -374,6 +374,10 @@ public:
 	void LoginStatusChanged(const EOS_Auth_LoginStatusChangedCallbackInfo* Data);
 
 	int32 GetDefaultLocalUser() const { return DefaultLocalUser; }
+	void GetUserAuthToken(int32 LocalUserNum, FString& Token, FString& UserAccountString);
+
+	typedef TFunction<void(FString Token, EOS_EpicAccountId AccountID, bool bSuccess)> FValidateUserAuthTokenCallback;
+	void ValidateUserAuthToken(const FString& TokenString, const FString& UserAccountString, const FValidateUserAuthTokenCallback& Callback);
 
 private:
 	void RemoveLocalUser(int32 LocalUserNum);
