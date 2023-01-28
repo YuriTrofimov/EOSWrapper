@@ -1,0 +1,34 @@
+{
+  "FileVersion": 1,
+  "Version": 1,
+  "VersionName": "1.0.0",
+  "FriendlyName": "EOS SDK Wrapper",
+  "Description": "",
+  "Category": "Online Platform",
+  "CreatedBy": "Trofimov Yuri",
+  "CreatedByURL": "https://github.com/YuriTrofimov/EOSWrapper",
+  "DocsURL": "",
+  "MarketplaceURL": "",
+  "SupportURL": "https://github.com/YuriTrofimov/EOSWrapper/issues",
+  "CanContainContent": false,
+  "IsBetaVersion": true,
+  "IsExperimentalVersion": false,
+  "Installed": false,
+  "Modules": [
+    {
+      "Name": "EOSWrapper",
+      "Type": "Runtime",
+      "LoadingPhase": "Default",
+      "PlatformAllowList": [
+        "Win64",
+        "Linux"
+      ]
+    }
+  ],
+  "Plugins": [
+    {
+      "Name": "OnlineSubsystem",
+      "Enabled": true
+    }
+  ]
+}
