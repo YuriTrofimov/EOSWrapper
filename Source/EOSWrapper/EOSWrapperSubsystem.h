@@ -6,6 +6,9 @@
 #include "CoreMinimal.h"
 #include "eos_auth_types.h"
 #include "eos_connect_types.h"
+#include "eos_friends_types.h"
+#include "eos_presence_types.h"
+#include "eos_ui_types.h"
 #include "eos_userinfo_types.h"
 #include "OnlineSubsystemImpl.h"
 #include "WrapperSDKManager.h"
@@ -71,20 +74,30 @@ public:
 	bool bIsDefaultOSS;
 	bool bIsPlatformOSS;
 
+	FString ProductId;
+
+	void ReleaseVoiceChatUserInterface(const FUniqueNetId& LocalUserId);
+
 	EOS_HAuth GetAuthHandle() { return AuthHandle; }
 	EOS_HConnect GetConnectHandle() { return ConnectHandle; }
 	EOS_HUserInfo GetUserInfoHandle() { return UserInfoHandle; }
-	FEOSWrapperUserManager* GetUserManager() { return UserManager.Get(); }
-
+	EOS_HFriends GetFriendsHandle() { return FriendsHandle; }
+	EOS_HUI GetUIHandle() { return UIHandle; }
+	EOS_HPresence GetPresenceHandle() { return PresenceHandle; }
+	
+	FORCEINLINE FWrapperSDKManager* GetSDKManager() const;
+	FEOSWrapperUserManagerPtr UserManager;
 private:
 	/** EOS handles */
 	EOS_HAuth AuthHandle = nullptr;
 	EOS_HConnect ConnectHandle = nullptr;
 	EOS_HUserInfo UserInfoHandle = nullptr;
+	EOS_HFriends FriendsHandle = nullptr;
+	EOS_HUI UIHandle = nullptr;
+	EOS_HPresence PresenceHandle = nullptr;
 
 	bool bInitialized = false;
 	TUniquePtr<FWrapperSDKManager> SDKManager;
-	FEOSWrapperUserManagerPtr UserManager;
 };
 
 typedef TSharedPtr<FEOSWrapperSubsystem, ESPMode::ThreadSafe> FEOSWrapperSubsystemPtr;

@@ -209,6 +209,100 @@ typedef TSharedRef<FOnlineUserPresence> FOnlineUserPresenceRef;
 
 #endif
 
+/**
+ * Implementation of FOnlineFriend methods that adds in the online user template to complete the interface
+ */
+template<class BaseClass>
+class TOnlineFriendEOS :
+	public TOnlineUserEOS<BaseClass, IAttributeAccessInterface>
+{
+public:
+	TOnlineFriendEOS(const FUniqueNetIdEOSRef& InNetIdRef)
+		: TOnlineUserEOS<BaseClass, IAttributeAccessInterface>(InNetIdRef)
+	{
+	}
+
+// FOnlineFriend
+	/**
+	 * @return the current invite status of a friend wrt to user that queried
+	 */
+	virtual EInviteStatus::Type GetInviteStatus() const override
+	{
+		return InviteStatus;
+	}
+
+	/**
+	 * @return presence info for an online friend
+	 */
+	virtual const FOnlineUserPresence& GetPresence() const override
+	{
+		return Presence;
+	}
+//~FOnlineFriend
+
+	void SetInviteStatus(EInviteStatus::Type InStatus)
+	{
+		InviteStatus = InStatus;
+	}
+
+	void SetPresence(FOnlineUserPresenceRef InPresence)
+	{
+		// Copy the data over since the friend shares it as a const&
+		Presence = *InPresence;
+	}
+
+protected:
+	FOnlineUserPresence Presence;
+	EInviteStatus::Type InviteStatus;
+};
+
+/**
+ * Implementation of FOnlineBlockedPlayer methods that adds in the online user template to complete the interface
+ */
+template<class BaseClass>
+class TOnlineBlockedPlayerEOS :
+	public TOnlineUserEOS<BaseClass, IAttributeAccessInterface>
+{
+public:
+	TOnlineBlockedPlayerEOS(const FUniqueNetIdEOSRef& InNetIdRef)
+		: TOnlineUserEOS<BaseClass, IAttributeAccessInterface>(InNetIdRef)
+	{
+	}
+};
+
+/**
+ * Implementation of FOnlineRecentPlayer methods that adds in the online user template to complete the interface
+ */
+template<class BaseClass>
+class TOnlineRecentPlayerEOS :
+	public TOnlineUserEOS<BaseClass, IAttributeAccessInterface>
+{
+public:
+	TOnlineRecentPlayerEOS(const FUniqueNetIdEOSRef& InNetIdRef)
+		: TOnlineUserEOS<BaseClass, IAttributeAccessInterface>(InNetIdRef)
+	{
+	}
+
+// FOnlineRecentPlayer
+	/**
+	 * @return last time the player was seen by the current user
+	 */
+	virtual FDateTime GetLastSeen() const override
+	{
+		return LastSeenTime;
+	}
+//~FOnlineRecentPlayer
+
+	void SetLastSeen(const FDateTime& InLastSeenTime)
+	{
+		LastSeenTime = InLastSeenTime;
+	}
+
+protected:
+	FDateTime LastSeenTime;
+};
+
+
 /** Class to handle all callbacks generically using a lambda to process callback results */
 template <typename CallbackFuncType, typename CallbackType, typename OwningType>
 class TEOSCallback : public FCallbackBase
@@ -247,3 +341,24 @@ private:
 		delete CallbackThis;
 	}
 };
+
+namespace OSSInternalCallback
+{
+/** Create a callback for a non-SDK function that is tied to the lifetime of an arbitrary shared pointer. */
+template <typename DelegateType, typename OwnerType, typename... CallbackArgs>
+UE_NODISCARD DelegateType Create(const TSharedPtr<OwnerType, ESPMode::ThreadSafe>& InOwner,
+	const TFunction<void(CallbackArgs...)>& InUserCallback)
+{
+	const DelegateType& CheckOwnerThenExecute = DelegateType::CreateLambda(
+		[WeakOwner = TWeakPtr<OwnerType, ESPMode::ThreadSafe>(InOwner), InUserCallback](CallbackArgs... Payload) {
+			check(IsInGameThread());
+			TSharedPtr<OwnerType, ESPMode::ThreadSafe> Owner = WeakOwner.Pin();
+			if (Owner.IsValid())
+			{
+				InUserCallback(Payload...);
+			}
+	});
+
+	return CheckOwnerThenExecute;
+}
+}

@@ -23,10 +23,13 @@ public:
 	bool Initialize();
 	void Shutdown();
 
+	FString GetProductVersion();
+
 	FORCEINLINE EOS_HPlatform GetPlatformHandle() const { return PlatformHandle; }
 
 private:
 	EOS_HPlatform PlatformHandle = nullptr;
+	FString ProductVersion;
 
 	void SetupTimer();
 	void ClearTimer();

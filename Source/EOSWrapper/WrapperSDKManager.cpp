@@ -11,9 +11,14 @@
 
 DEFINE_LOG_CATEGORY(EOSWrapperSDKManager);
 
-FWrapperSDKManager::FWrapperSDKManager() {}
+FWrapperSDKManager::FWrapperSDKManager()
+{
+	ProductVersion = TEXT("1.0");
+}
 
-FWrapperSDKManager::~FWrapperSDKManager() {}
+FWrapperSDKManager::~FWrapperSDKManager()
+{
+}
 
 bool FWrapperSDKManager::Initialize()
 {
@@ -28,7 +33,7 @@ bool FWrapperSDKManager::Initialize()
 	SDKOptions.ReallocateMemoryFunction = nullptr;
 	SDKOptions.ReleaseMemoryFunction = nullptr;
 	SDKOptions.ProductName = TCHAR_TO_ANSI(TEXT("OfficeProject"));
-	SDKOptions.ProductVersion = "1.0";
+	SDKOptions.ProductVersion = TCHAR_TO_ANSI(*ProductVersion);
 	SDKOptions.Reserved = nullptr;
 	SDKOptions.SystemInitializeOptions = nullptr;
 	SDKOptions.OverrideThreadAffinity = nullptr;
@@ -138,6 +143,11 @@ void FWrapperSDKManager::Shutdown()
 	bInitialized = false;
 }
 
+FString FWrapperSDKManager::GetProductVersion()
+{
+	return ProductVersion;
+}
+
 void FWrapperSDKManager::ClearTimer()
 {
 	if (TickerHandle.IsValid())
@@ -189,12 +199,18 @@ void EOS_CALL FWrapperSDKManager::EOSLogMessageReceived(const EOS_LogMessage* Me
 
 	switch (Message->Level)
 	{
-		case EOS_ELogLevel::EOS_LOG_Fatal: EOSLOG(Fatal); break;
-		case EOS_ELogLevel::EOS_LOG_Error: EOSLOG(Error); break;
-		case EOS_ELogLevel::EOS_LOG_Warning: EOSLOG(Warning); break;
-		case EOS_ELogLevel::EOS_LOG_Info: EOSLOG(Log); break;
-		case EOS_ELogLevel::EOS_LOG_Verbose: EOSLOG(Verbose); break;
-		case EOS_ELogLevel::EOS_LOG_VeryVerbose: EOSLOG(VeryVerbose); break;
+		case EOS_ELogLevel::EOS_LOG_Fatal: EOSLOG(Fatal);
+			break;
+		case EOS_ELogLevel::EOS_LOG_Error: EOSLOG(Error);
+			break;
+		case EOS_ELogLevel::EOS_LOG_Warning: EOSLOG(Warning);
+			break;
+		case EOS_ELogLevel::EOS_LOG_Info: EOSLOG(Log);
+			break;
+		case EOS_ELogLevel::EOS_LOG_Verbose: EOSLOG(Verbose);
+			break;
+		case EOS_ELogLevel::EOS_LOG_VeryVerbose: EOSLOG(VeryVerbose);
+			break;
 		case EOS_ELogLevel::EOS_LOG_Off:
 		default:
 			// do nothing
