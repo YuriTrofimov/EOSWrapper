@@ -150,10 +150,12 @@ void FEOSWrapperUserManager::Shutdown()
 	{
 		// Removing subscription to external ui display change event
 		EOS_UI_RemoveNotifyDisplaySettingsUpdated(EOSSubsystem->GetUIHandle(), DisplaySettingsUpdatedId);
-
+		DisplaySettingsUpdatedId = EOS_INVALID_NOTIFICATIONID;
+		
 		if (DisplaySettingsUpdatedCallback)
 		{
 			delete DisplaySettingsUpdatedCallback;
+			DisplaySettingsUpdatedCallback = nullptr;
 		}
 	}
 }
@@ -1400,12 +1402,12 @@ void FEOSWrapperUserManager::GetUserAuthToken(int32 LocalUserNum, FString& Token
 	{
 		Token = UTF8_TO_TCHAR(IdToken->JsonWebToken);
 		UserAccountString = LexToString(AccountID);
-		//	UE_LOG_ONLINE(Verbose, "IdToken=%s", UTF8_TO_TCHAR(IdToken->JsonWebToken));
+		//UE_LOG_ONLINE(Verbose, "IdToken=%s", UTF8_TO_TCHAR(IdToken->JsonWebToken));
 		EOS_Auth_IdToken_Release(IdToken);
 	}
 	else
 	{
-		//	UE_LOG_ONLINE(Error, "IdToken (EOS_Auth_CopyIdToken failed: %ls)", *LexToString(Result));
+		//UE_LOG_ONLINE(Error, "IdToken (EOS_Auth_CopyIdToken failed: %ls)", *LexToString(Result));
 	}
 }
 

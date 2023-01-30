@@ -26,29 +26,18 @@ public:
 	FString GetProductVersion();
 
 	FORCEINLINE EOS_HPlatform GetPlatformHandle() const { return PlatformHandle; }
-
+	bool Tick(float);
+	
 private:
 	EOS_HPlatform PlatformHandle = nullptr;
 	FString ProductVersion;
-
-	void SetupTimer();
-	void ClearTimer();
-	bool Tick(float);
-	void Tick();
+	
 	static void EOS_CALL EOSLogMessageReceived(const EOS_LogMessage* Message);
 
 	/** Are we currently initialized */
 	bool bInitialized = false;
-
-	/** Handle to ticker delegate for Tick() */
-	FTSTicker::FDelegateHandle TickerHandle;
-
 	EOS_EApplicationStatus CachedApplicationStatus = EOS_EApplicationStatus::EOS_AS_Foreground;
 	EOS_ENetworkStatus CachedNetworkStatus = EOS_ENetworkStatus::EOS_NS_Online;
-
-	// Config
-	/** Interval between platform ticks. 0 means we tick every frame. */
-	double ConfigTickIntervalSeconds = 0.1f;
 };
 
 #endif

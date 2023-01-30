@@ -70,6 +70,7 @@ struct FEOSWrapperSettings
 	bool bMirrorAchievementsToEOS;
 	bool bMirrorPresenceToEAS;
 	TArray<FEOSArtifactSettings> Artifacts;
+	FEOSArtifactSettings ServerArtifacts;
 	TArray<FString> TitleStorageTags;
 };
 
@@ -125,6 +126,10 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "EOS Settings")
 	TArray<FEOSWrapperArtifactSettings> Artifacts;
 
+	/** Dedicated server artifacts */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "EOS Settings")
+	FEOSWrapperArtifactSettings ServerArtifacts;
+	
 	/** Set to true to have Epic Accounts used (friends list will be unified with the default platform) */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "EOSPlus Login Settings", DisplayName = "Use Epic Account for EOS login (requires account linking)")
 	bool bUseEAS = false;

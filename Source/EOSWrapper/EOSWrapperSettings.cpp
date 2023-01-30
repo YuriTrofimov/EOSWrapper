@@ -178,7 +178,7 @@ FEOSWrapperSettings UEOSWrapperSettings::ToNative() const
 	Native.bMirrorPresenceToEAS = bMirrorPresenceToEAS;
 	Algo::Transform(Artifacts, Native.Artifacts, &FEOSWrapperArtifactSettings::ToNative);
 	Native.TitleStorageTags = TitleStorageTags;
-
+	Native.ServerArtifacts = ServerArtifacts.ToNative();
 	return Native;
 }
 
@@ -306,7 +306,7 @@ void UEOSWrapperSettings::PostEditChangeProperty(FPropertyChangedEvent& Property
 	}
 
 	if (PropertyChangedEvent.MemberProperty != nullptr && PropertyChangedEvent.MemberProperty->GetFName() == FName(TEXT("Artifacts")) &&
-		(PropertyChangedEvent.ChangeType & EPropertyChangeType::ValueSet))
+	    (PropertyChangedEvent.ChangeType & EPropertyChangeType::ValueSet))
 	{
 		// Loop through all entries validating them
 		for (FEOSWrapperArtifactSettings& Artifact : Artifacts)
@@ -376,7 +376,7 @@ void UEOSWrapperSettings::PostEditChangeProperty(FPropertyChangedEvent& Property
 
 	// These all require EOS turned on if they are on
 	if (PropertyChangedEvent.Property->GetFName() == FName(TEXT("bMirrorAchievementsToEOS")) || PropertyChangedEvent.Property->GetFName() == FName(TEXT("bMirrorStatsToEOS")) ||
-		PropertyChangedEvent.Property->GetFName() == FName(TEXT("bUseEOSSessions")))
+	    PropertyChangedEvent.Property->GetFName() == FName(TEXT("bUseEOSSessions")))
 	{
 		if (bMirrorAchievementsToEOS || bMirrorStatsToEOS || bUseEOSSessions)
 		{

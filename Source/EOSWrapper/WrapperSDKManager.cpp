@@ -2,6 +2,8 @@
 // Source Code:     https://github.com/YuriTrofimov/EOSWrapper
 
 #include "WrapperSDKManager.h"
+
+#include "EOSWrapperSettings.h"
 #include "EOSWrapperTypes.h"
 
 #if WITH_EOS_SDK
@@ -27,6 +29,8 @@ bool FWrapperSDKManager::Initialize()
 	UE_LOG(EOSWrapperSDKManager, Display, TEXT("EOSWrapperSubsystem INITIALIZE EOS SDK"));
 	EOS_Logging_SetLogLevel(EOS_ELogCategory::EOS_LC_ALL_CATEGORIES, EOS_ELogLevel::EOS_LOG_Verbose);
 
+	FEOSWrapperSettings Settings = UEOSWrapperSettings::GetSettings();
+
 	EOS_InitializeOptions SDKOptions = {};
 	SDKOptions.ApiVersion = EOS_INITIALIZE_API_LATEST;
 	SDKOptions.AllocateMemoryFunction = nullptr;
@@ -45,12 +49,12 @@ bool FWrapperSDKManager::Initialize()
 	}
 
 #if UE_SERVER
-	FString ProductId = TEXT("b592962ba3834c42a85866aa344e410c");
-	FString SandboxId = TEXT("232af36c61c84711a41b15f455053564");
-	FString ClientId = TEXT("xyza7891BE28P0kgqAL0zlHh2h8w5JQc");
-	FString ClientSecret = TEXT("DWdlDHRx3CYcxOLELULPLl7ePE8zdQs9s0y6LyIjOgQ");
-	FString EncryptionKey = TEXT("3273357638792F423F4528482B4D6251655468576D597133743677397A244326");
-	FString DeploymentId = TEXT("fc423573e558485d85347f1cb6c8f1c3");
+		FString ProductId = TEXT("b592962ba3834c42a85866aa344e410c");
+		FString SandboxId = TEXT("232af36c61c84711a41b15f455053564");
+		FString ClientId = TEXT("xyza7891BE28P0kgqAL0zlHh2h8w5JQc");
+		FString ClientSecret = TEXT("DWdlDHRx3CYcxOLELULPLl7ePE8zdQs9s0y6LyIjOgQ");
+		FString EncryptionKey = TEXT("3273357638792F423F4528482B4D6251655468576D597133743677397A244326");
+		FString DeploymentId = TEXT("fc423573e558485d85347f1cb6c8f1c3");
 #else
 	FString ProductId = TEXT("b592962ba3834c42a85866aa344e410c");
 	FString SandboxId = TEXT("232af36c61c84711a41b15f455053564");
@@ -59,6 +63,25 @@ bool FWrapperSDKManager::Initialize()
 	FString EncryptionKey = TEXT("3273357638792F423F4528482B4D6251655468576D597133743677397A244326");
 	FString DeploymentId = TEXT("fc423573e558485d85347f1cb6c8f1c3");
 #endif
+
+	// #if UE_SERVER
+	// 	FString ProductId = Settings.ServerArtifacts.ProductId;
+	// 	FString SandboxId = Settings.ServerArtifacts.SandboxId;
+	// 	FString ClientId = Settings.ServerArtifacts.ClientId;
+	// 	FString ClientSecret = Settings.ServerArtifacts.ClientSecret;
+	// 	FString EncryptionKey = Settings.ServerArtifacts.EncryptionKey;
+	// 	FString DeploymentId = Settings.ServerArtifacts.DeploymentId;
+	// #else
+	// 	FEOSArtifactSettings ClientArtifacts;
+	// 	UEOSWrapperSettings::GetSettingsForArtifact(Settings.DefaultArtifactName, ClientArtifacts);
+	//
+	// 	FString ProductId = ClientArtifacts.ProductId;
+	// 	FString SandboxId = ClientArtifacts.SandboxId;
+	// 	FString ClientId = ClientArtifacts.ClientId;
+	// 	FString ClientSecret = ClientArtifacts.ClientSecret;
+	// 	FString EncryptionKey = ClientArtifacts.EncryptionKey;
+	// 	FString DeploymentId = ClientArtifacts.DeploymentId;
+	// #endif
 
 	FString CacheDirBase = FPlatformProcess::UserDir();
 
@@ -81,6 +104,7 @@ bool FWrapperSDKManager::Initialize()
 	PlatformOptions.Flags = EOS_PF_DISABLE_OVERLAY;
 #else
 	PlatformOptions.bIsServer = EOS_FALSE;
+
 	// Can't check GIsEditor here because it is too soon!
 	if (!IsRunningGame())
 	{
@@ -116,13 +140,10 @@ bool FWrapperSDKManager::Initialize()
 	}
 
 	UE_LOG(EOSWrapperSDKManager, Display, TEXT("EOSWrapperSubsystem EOS SDK INITIALIZED!"));
-	SetupTimer();
 
 	EOS_Platform_SetApplicationStatus(PlatformHandle, CachedApplicationStatus);
 	EOS_Platform_SetNetworkStatus(PlatformHandle, CachedNetworkStatus);
-
-	// Tick the platform once to work around EOSSDK error logging that occurs if you create then immediately destroy a platform.
-	Tick();
+	EOS_Platform_Tick(PlatformHandle);
 
 	bInitialized = true;
 	return true;
@@ -131,8 +152,6 @@ bool FWrapperSDKManager::Initialize()
 void FWrapperSDKManager::Shutdown()
 {
 	if (!bInitialized) return;
-
-	ClearTimer();
 
 	if (PlatformHandle != nullptr)
 	{
@@ -148,26 +167,6 @@ FString FWrapperSDKManager::GetProductVersion()
 	return ProductVersion;
 }
 
-void FWrapperSDKManager::ClearTimer()
-{
-	if (TickerHandle.IsValid())
-	{
-		FTSTicker::GetCoreTicker().RemoveTicker(TickerHandle);
-		TickerHandle.Reset();
-	}
-}
-
-void FWrapperSDKManager::SetupTimer()
-{
-	ClearTimer();
-
-	if (PlatformHandle != nullptr)
-	{
-		const double TickIntervalSeconds = ConfigTickIntervalSeconds > SMALL_NUMBER ? ConfigTickIntervalSeconds : 0.f;
-		TickerHandle = FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateRaw(this, &FWrapperSDKManager::Tick), TickIntervalSeconds);
-	}
-}
-
 bool FWrapperSDKManager::Tick(float)
 {
 	if (PlatformHandle)
@@ -180,14 +179,6 @@ bool FWrapperSDKManager::Tick(float)
 	}
 
 	return false;
-}
-
-void FWrapperSDKManager::Tick()
-{
-	// LLM_SCOPE(ELLMTag::RealTimeCommunications);
-	// QUICK_SCOPE_CYCLE_COUNTER(FEOSPlatformHandle_Tick);
-	// CSV_SCOPED_TIMING_STAT_EXCLUSIVE(EOSSDK);
-	EOS_Platform_Tick(PlatformHandle);
 }
 
 void EOS_CALL FWrapperSDKManager::EOSLogMessageReceived(const EOS_LogMessage* Message)

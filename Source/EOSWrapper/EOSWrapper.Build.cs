@@ -9,7 +9,10 @@ public class EOSWrapper : ModuleRules
 	public EOSWrapper(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PrivateDependencyModuleNames.AddRange(new string[]
-			{ "Core", "CoreUObject", "Engine", "CoreOnline", "OnlineSubsystem" });
+		{
+			"Core", "CoreUObject", "Engine", "CoreOnline", "OnlineSubsystem", "OnlineSubsystemUtils", "OnlineBase",
+			"Sockets"
+		});
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
 		PrivateDefinitions.Add("WITH_EOS_SDK=1");

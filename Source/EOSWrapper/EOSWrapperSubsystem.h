@@ -7,7 +7,10 @@
 #include "eos_auth_types.h"
 #include "eos_connect_types.h"
 #include "eos_friends_types.h"
+#include "eos_lobby_types.h"
+#include "eos_metrics_types.h"
 #include "eos_presence_types.h"
+#include "eos_sessions_types.h"
 #include "eos_ui_types.h"
 #include "eos_userinfo_types.h"
 #include "OnlineSubsystemImpl.h"
@@ -17,6 +20,8 @@ DECLARE_LOG_CATEGORY_EXTERN(EOSWrapperSubsystem, Log, All);
 
 class FEOSWrapperUserManager;
 typedef TSharedPtr<class FEOSWrapperUserManager, ESPMode::ThreadSafe> FEOSWrapperUserManagerPtr;
+
+#define EOS_OSS_STRING_BUFFER_LENGTH 256 + 1  // 256 plus null terminator
 
 /**
  *
@@ -37,6 +42,9 @@ public:
 	virtual bool Init() override;
 	virtual bool Shutdown() override;
 	virtual FString GetAppId() const override;
+
+	// FTSTickerObjectBase
+	virtual bool Tick(float DeltaTime) override;
 
 	// IOnlineSubsystem
 	virtual IOnlineSessionPtr GetSessionInterface() const override;
@@ -84,9 +92,16 @@ public:
 	EOS_HFriends GetFriendsHandle() { return FriendsHandle; }
 	EOS_HUI GetUIHandle() { return UIHandle; }
 	EOS_HPresence GetPresenceHandle() { return PresenceHandle; }
+	EOS_HSessions GetSessionsHandle() { return SessionsHandle; }
+	EOS_HMetrics GetMetricsHandle() { return MetricsHandle; }
+	EOS_HLobby GetLobbyHandle() { return LobbyHandle; }
 	
 	FORCEINLINE FWrapperSDKManager* GetSDKManager() const;
+	FORCEINLINE class FEOSWrapperSessionManager* GetLobbyManager() const;
 	FEOSWrapperUserManagerPtr UserManager;
+
+	/** This is the game name plus version in ansi done once for optimization */
+	char BucketIdAnsi[EOS_OSS_STRING_BUFFER_LENGTH];
 private:
 	/** EOS handles */
 	EOS_HAuth AuthHandle = nullptr;
@@ -95,9 +110,13 @@ private:
 	EOS_HFriends FriendsHandle = nullptr;
 	EOS_HUI UIHandle = nullptr;
 	EOS_HPresence PresenceHandle = nullptr;
+	EOS_HSessions SessionsHandle = nullptr;
+	EOS_HMetrics MetricsHandle = nullptr;
+	EOS_HLobby LobbyHandle = nullptr;
 
 	bool bInitialized = false;
 	TUniquePtr<FWrapperSDKManager> SDKManager;
+	TSharedPtr<FEOSWrapperSessionManager> LobbyManager;
 };
 
 typedef TSharedPtr<FEOSWrapperSubsystem, ESPMode::ThreadSafe> FEOSWrapperSubsystemPtr;

@@ -18,9 +18,17 @@ class EOSWRAPPER_API UEOWGameInstanceSubsystem : public UGameInstanceSubsystem
 
 public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnTokenValidationComplete, bool, bValid, const FString&, Token);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLobbyCreatedHandler, const FName&, LobbySessionName);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLobbyUpdatedHandler, const FName&, LobbySessionName);
 
 	UPROPERTY(BlueprintAssignable)
 	FOnTokenValidationComplete OnTokenValidationComplete;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnLobbyCreatedHandler OnLobbyCreated;
+	
+	UPROPERTY(BlueprintAssignable)
+	FOnLobbyUpdatedHandler OnLobbyUpdated;
 
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
@@ -32,10 +40,20 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Online|Game|Login")
 	void IsUserLoggedIn(bool& LoggedIn, int32 LocalUserNum = 0) const;
 
-	UFUNCTION(BlueprintPure, Category = "Online|Game|Session")
+	UFUNCTION(BlueprintPure, Category = "Online|Game|Login")
 	void GetUserToken(int32 LocalUserNum, FString& Token, FString& UserAccountString);
+
+	UFUNCTION(BlueprintCallable, Category = "Online|Game|Lobby")
+	void CreateLobby(int32 LocalUserNum, FName LobbyName);
+
+	UFUNCTION(BlueprintCallable, Category = "Online|Game|Lobby")
+	void SetLobbyAttributeString(FName LobbyName, FName Key, FString Value);
 
 	void ValidateUserAuthToken(const FString& Token, const FString& AccountIDString) const;
 protected:
-	class IOnlineSubsystem* OnlineSubsystem;
+	class FEOSWrapperSubsystem* OnlineSubsystem;
+
+private:
+	TSharedPtr<class FOnlineSessionSettings> LastSessionSettings;
+	void OnLobbyUpdatedCallback(const FName& LobbySessionName);
 };

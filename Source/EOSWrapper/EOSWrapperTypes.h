@@ -3,6 +3,7 @@
 
 #pragma once
 #include "EOSWrapperShared.h"
+#include "eos_sessions_types.h"
 #include "Interfaces/OnlinePresenceInterface.h"
 
 #if WITH_EOS_SDK
@@ -19,6 +20,16 @@
 #define EOS_ID_SEPARATOR TEXT("|")
 #define ID_HALF_BYTE_SIZE 16
 #define EOS_ID_BYTE_SIZE (ID_HALF_BYTE_SIZE * 2)
+
+#ifndef EOS_SOCKETSUBSYSTEM
+#define EOS_SOCKETSUBSYSTEM FName(TEXT("EOS"))
+#endif
+
+#ifndef EOS_CONNECTION_URL_PREFIX
+#define EOS_CONNECTION_URL_PREFIX TEXT("EOS")
+#endif
+
+class FEOSWrapperSubsystem;
 
 typedef TSharedPtr<const class FUniqueNetIdEOS> FUniqueNetIdEOSPtr;
 typedef TSharedRef<const class FUniqueNetIdEOS> FUniqueNetIdEOSRef;
@@ -362,3 +373,81 @@ UE_NODISCARD DelegateType Create(const TSharedPtr<OwnerType, ESPMode::ThreadSafe
 	return CheckOwnerThenExecute;
 }
 }
+
+/**
+ * Implementation of session information
+ */
+class FOnlineSessionInfoEOS :
+	public FOnlineSessionInfo
+{
+protected:
+	/** Hidden on purpose */
+	FOnlineSessionInfoEOS& operator=(const FOnlineSessionInfoEOS& Src)
+	{
+		return *this;
+	}
+
+	PACKAGE_SCOPE:
+		/** Constructor */
+		FOnlineSessionInfoEOS();
+
+	FOnlineSessionInfoEOS(const FOnlineSessionInfoEOS& Src)
+		: FOnlineSessionInfo(Src)
+		, HostAddr(Src.HostAddr)
+		, SessionId(Src.SessionId)
+		, SessionHandle(Src.SessionHandle)
+		, bIsFromClone(true)
+	{
+	}
+
+	FOnlineSessionInfoEOS(const FString& InHostIp, FUniqueNetIdStringRef UniqueNetId, EOS_HSessionDetails InSessionHandle);
+
+	/**
+	 * Initialize LAN session
+	 */
+	void InitLAN(FEOSWrapperSubsystem* Subsystem);
+
+	FString EOSAddress;
+	/** The ip & port that the host is listening on (valid for LAN/GameServer) */
+	TSharedPtr<class FInternetAddr> HostAddr;
+	/** Unique Id for this session */
+	FUniqueNetIdStringRef SessionId;
+	/** EOS session handle. Note: this needs to be released by the SDK */
+	EOS_HSessionDetails SessionHandle;
+	/** Whether we should delete this handle or not */
+	bool bIsFromClone;
+
+public:
+	virtual ~FOnlineSessionInfoEOS();
+	bool operator==(const FOnlineSessionInfoEOS& Other) const
+	{
+		return false;
+	}
+	virtual const uint8* GetBytes() const override
+	{
+		return nullptr;
+	}
+	virtual int32 GetSize() const override
+	{
+		return sizeof(uint64) + sizeof(TSharedPtr<class FInternetAddr>);
+	}
+	virtual bool IsValid() const override
+	{
+		// LAN case
+		return HostAddr.IsValid() && HostAddr->IsValid();
+	}
+	virtual FString ToString() const override
+	{
+		return SessionId->ToString();
+	}
+	virtual FString ToDebugString() const override
+	{
+		return FString::Printf(TEXT("HostIP: %s SessionId: %s"),
+			HostAddr.IsValid() ? *HostAddr->ToString(true) : TEXT("INVALID"),
+			*SessionId->ToDebugString());
+	}
+	virtual const FUniqueNetId& GetSessionId() const override
+	{
+		return *SessionId;
+	}
+};
