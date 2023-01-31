@@ -129,7 +129,7 @@ public:
 	/** Dedicated server artifacts */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "EOS Settings")
 	FEOSWrapperArtifactSettings ServerArtifacts;
-	
+
 	/** Set to true to have Epic Accounts used (friends list will be unified with the default platform) */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "EOSPlus Login Settings", DisplayName = "Use Epic Account for EOS login (requires account linking)")
 	bool bUseEAS = false;

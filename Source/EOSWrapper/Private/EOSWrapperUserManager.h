@@ -18,15 +18,12 @@ typedef TSharedPtr<FOnlineUser> FOnlineUserPtr;
 typedef TSharedRef<FOnlineUser> FOnlineUserRef;
 
 /**
-* Concrete online user class built from the reusable templates
-*/
+ * Concrete online user class built from the reusable templates
+ */
 class FOnlineUserEOS : public TOnlineUserEOS<FOnlineUser, IAttributeAccessInterface>
 {
 public:
-	FOnlineUserEOS(FUniqueNetIdEOSRef InUserId)
-		: TOnlineUserEOS<FOnlineUser, IAttributeAccessInterface>(InUserId)
-	{
-	}
+	FOnlineUserEOS(FUniqueNetIdEOSRef InUserId) : TOnlineUserEOS<FOnlineUser, IAttributeAccessInterface>(InUserId) {}
 
 	virtual ~FOnlineUserEOS() = default;
 };
@@ -40,10 +37,7 @@ typedef TSharedRef<FOnlineUserEOS> FOnlineUserEOSRef;
 class FUserOnlineAccountEOS : public TUserOnlineAccountEOS<FUserOnlineAccount>
 {
 public:
-	FUserOnlineAccountEOS(FUniqueNetIdEOSRef InUserId)
-		: TUserOnlineAccountEOS<FUserOnlineAccount>(InUserId)
-	{
-	}
+	FUserOnlineAccountEOS(FUniqueNetIdEOSRef InUserId) : TUserOnlineAccountEOS<FUserOnlineAccount>(InUserId) {}
 
 	virtual ~FUserOnlineAccountEOS() = default;
 };
@@ -57,10 +51,7 @@ typedef TSharedRef<FUserOnlineAccountEOS> FUserOnlineAccountEOSRef;
 class FOnlineFriendEOS : public TOnlineFriendEOS<FOnlineFriend>
 {
 public:
-	FOnlineFriendEOS(FUniqueNetIdEOSRef InUserId)
-		: TOnlineFriendEOS<FOnlineFriend>(InUserId)
-	{
-	}
+	FOnlineFriendEOS(FUniqueNetIdEOSRef InUserId) : TOnlineFriendEOS<FOnlineFriend>(InUserId) {}
 
 	virtual ~FOnlineFriendEOS() = default;
 };
@@ -74,10 +65,7 @@ typedef TSharedRef<FOnlineFriendEOS> FOnlineFriendEOSRef;
 class FOnlineBlockedPlayerEOS : public TOnlineBlockedPlayerEOS<FOnlineBlockedPlayer>
 {
 public:
-	FOnlineBlockedPlayerEOS(FUniqueNetIdEOSRef InUserId)
-		: TOnlineBlockedPlayerEOS<FOnlineBlockedPlayer>(InUserId)
-	{
-	}
+	FOnlineBlockedPlayerEOS(FUniqueNetIdEOSRef InUserId) : TOnlineBlockedPlayerEOS<FOnlineBlockedPlayer>(InUserId) {}
 
 	virtual ~FOnlineBlockedPlayerEOS() = default;
 };
@@ -91,10 +79,7 @@ typedef TSharedRef<FOnlineBlockedPlayerEOS> FOnlineBlockedPlayerEOSRef;
 class FOnlineRecentPlayerEOS : public TOnlineRecentPlayerEOS<FOnlineRecentPlayer>
 {
 public:
-	FOnlineRecentPlayerEOS(FUniqueNetIdEOSRef InUserId)
-		: TOnlineRecentPlayerEOS<FOnlineRecentPlayer>(InUserId)
-	{
-	}
+	FOnlineRecentPlayerEOS(FUniqueNetIdEOSRef InUserId) : TOnlineRecentPlayerEOS<FOnlineRecentPlayer>(InUserId) {}
 
 	virtual ~FOnlineRecentPlayerEOS() = default;
 };
@@ -115,16 +100,9 @@ class TOnlinePlayerList
 	TMap<FString, ListClass> NetIdStringToListEntryMap;
 
 public:
-	TOnlinePlayerList(int32 InLocalUserNum, FUniqueNetIdEOSRef InOwningNetId)
-		: LocalUserNum(InLocalUserNum)
-		  , OwningNetId(InOwningNetId)
-	{
-	}
+	TOnlinePlayerList(int32 InLocalUserNum, FUniqueNetIdEOSRef InOwningNetId) : LocalUserNum(InLocalUserNum), OwningNetId(InOwningNetId) {}
 
-	const TArray<ListClass>& GetList()
-	{
-		return ListEntries;
-	}
+	const TArray<ListClass>& GetList() { return ListEntries; }
 
 	void Add(const FString& InNetId, ListClass InListEntry)
 	{
@@ -178,10 +156,7 @@ public:
 class FFriendsListEOS : public TOnlinePlayerList<FOnlineFriendEOSRef, FOnlineFriendEOSPtr>
 {
 public:
-	FFriendsListEOS(int32 InLocalUserNum, FUniqueNetIdEOSRef InOwningNetId)
-		: TOnlinePlayerList<FOnlineFriendEOSRef, FOnlineFriendEOSPtr>(InLocalUserNum, InOwningNetId)
-	{
-	}
+	FFriendsListEOS(int32 InLocalUserNum, FUniqueNetIdEOSRef InOwningNetId) : TOnlinePlayerList<FOnlineFriendEOSRef, FOnlineFriendEOSPtr>(InLocalUserNum, InOwningNetId) {}
 
 	virtual ~FFriendsListEOS() = default;
 };
@@ -191,10 +166,7 @@ typedef TSharedRef<FFriendsListEOS> FFriendsListEOSRef;
 class FBlockedPlayersListEOS : public TOnlinePlayerList<FOnlineBlockedPlayerEOSRef, FOnlineBlockedPlayerEOSPtr>
 {
 public:
-	FBlockedPlayersListEOS(int32 InLocalUserNum, FUniqueNetIdEOSRef InOwningNetId)
-		: TOnlinePlayerList<FOnlineBlockedPlayerEOSRef, FOnlineBlockedPlayerEOSPtr>(InLocalUserNum, InOwningNetId)
-	{
-	}
+	FBlockedPlayersListEOS(int32 InLocalUserNum, FUniqueNetIdEOSRef InOwningNetId) : TOnlinePlayerList<FOnlineBlockedPlayerEOSRef, FOnlineBlockedPlayerEOSPtr>(InLocalUserNum, InOwningNetId) {}
 
 	virtual ~FBlockedPlayersListEOS() = default;
 };
@@ -204,10 +176,7 @@ typedef TSharedRef<FBlockedPlayersListEOS> FBlockedPlayersListEOSRef;
 class FRecentPlayersListEOS : public TOnlinePlayerList<FOnlineRecentPlayerEOSRef, FOnlineRecentPlayerEOSPtr>
 {
 public:
-	FRecentPlayersListEOS(int32 InLocalUserNum, FUniqueNetIdEOSRef InOwningNetId)
-		: TOnlinePlayerList<FOnlineRecentPlayerEOSRef, FOnlineRecentPlayerEOSPtr>(InLocalUserNum, InOwningNetId)
-	{
-	}
+	FRecentPlayersListEOS(int32 InLocalUserNum, FUniqueNetIdEOSRef InOwningNetId) : TOnlinePlayerList<FOnlineRecentPlayerEOSRef, FOnlineRecentPlayerEOSPtr>(InLocalUserNum, InOwningNetId) {}
 
 	virtual ~FRecentPlayersListEOS() = default;
 };
@@ -219,28 +188,20 @@ struct FNotificationIdCallbackPair
 	EOS_NotificationId NotificationId;
 	FCallbackBase* Callback;
 
-	FNotificationIdCallbackPair()
-		: NotificationId(EOS_INVALID_NOTIFICATIONID)
-		  , Callback(nullptr)
-	{
-	}
+	FNotificationIdCallbackPair() : NotificationId(EOS_INVALID_NOTIFICATIONID), Callback(nullptr) {}
 
-	virtual ~FNotificationIdCallbackPair()
-	{
-		delete Callback;
-	}
+	virtual ~FNotificationIdCallbackPair() { delete Callback; }
 };
 
 /**
  *
  */
-class EOSWRAPPER_API FEOSWrapperUserManager
-	: public IOnlineIdentity
-	  , public IOnlineExternalUI
-	  , public IOnlineFriends
-	  , public IOnlinePresence
-	  , public IOnlineUser
-	  , public TSharedFromThis<FEOSWrapperUserManager, ESPMode::ThreadSafe>
+class EOSWRAPPER_API FEOSWrapperUserManager : public IOnlineIdentity,
+											  public IOnlineExternalUI,
+											  public IOnlineFriends,
+											  public IOnlinePresence,
+											  public IOnlineUser,
+											  public TSharedFromThis<FEOSWrapperUserManager, ESPMode::ThreadSafe>
 {
 public:
 	FEOSWrapperUserManager() = delete;
@@ -308,8 +269,8 @@ public:
 	virtual bool QueryBlockedPlayers(const FUniqueNetId& UserId) override;
 	virtual bool GetBlockedPlayers(const FUniqueNetId& UserId, TArray<TSharedRef<FOnlineBlockedPlayer>>& OutBlockedPlayers) override;
 	virtual void DumpBlockedPlayers() const override;
-	virtual void SetFriendAlias(int32 LocalUserNum, const FUniqueNetId& FriendId, const FString& ListName, const FString& Alias,
-		const FOnSetFriendAliasComplete& Delegate = FOnSetFriendAliasComplete()) override;
+	virtual void SetFriendAlias(
+		int32 LocalUserNum, const FUniqueNetId& FriendId, const FString& ListName, const FString& Alias, const FOnSetFriendAliasComplete& Delegate = FOnSetFriendAliasComplete()) override;
 	virtual void DeleteFriendAlias(int32 LocalUserNum, const FUniqueNetId& FriendId, const FString& ListName, const FOnDeleteFriendAliasComplete& Delegate = FOnDeleteFriendAliasComplete()) override;
 	virtual void DumpRecentPlayers() const override;
 	// ~IOnlineFriends Interface
@@ -344,10 +305,7 @@ public:
 	FUniqueNetIdEOSPtr GetLocalUniqueNetIdEOS(EOS_ProductUserId UserId) const;
 	FUniqueNetIdEOSPtr GetLocalUniqueNetIdEOS(EOS_EpicAccountId AccountId) const;
 
-	FUniqueNetIdEOSPtr GetLocalUniqueNetIdEOS() const
-	{
-		return GetLocalUniqueNetIdEOS(GetDefaultLocalUser());
-	}
+	FUniqueNetIdEOSPtr GetLocalUniqueNetIdEOS() const { return GetLocalUniqueNetIdEOS(GetDefaultLocalUser()); }
 
 	int32 GetLocalUserNumFromUniqueNetId(const FUniqueNetId& NetId) const;
 	bool IsLocalUser(const FUniqueNetId& NetId) const;
@@ -385,8 +343,8 @@ private:
 
 	void AddFriend(int32 LocalUserNum, EOS_EpicAccountId EpicAccountId);
 	void AddRemotePlayer(int32 LocalUserNum, const FString& NetId, EOS_EpicAccountId EpicAccountId);
-	void AddRemotePlayer(int32 LocalUserNum, const FString& NetId, EOS_EpicAccountId EpicAccountId, FUniqueNetIdEOSPtr UniqueNetId, FOnlineUserPtr OnlineUser,
-		IAttributeAccessInterfaceRef AttributeRef);
+	void AddRemotePlayer(
+		int32 LocalUserNum, const FString& NetId, EOS_EpicAccountId EpicAccountId, FUniqueNetIdEOSPtr UniqueNetId, FOnlineUserPtr OnlineUser, IAttributeAccessInterfaceRef AttributeRef);
 	void UpdateRemotePlayerProductUserId(EOS_EpicAccountId AccountId, EOS_ProductUserId UserId);
 	void ReadUserInfo(int32 LocalUserNum, EOS_EpicAccountId EpicAccountId);
 
@@ -459,15 +417,9 @@ private:
 		const FString ListName;
 		const FOnReadFriendsListComplete Delegate;
 
-		ReadUserListInfo(int32 InLocalUserNum, const FString& InListName, FOnReadFriendsListComplete InDelegate)
-			: LocalUserNum(InLocalUserNum), ListName(InListName), Delegate(MoveTemp(InDelegate))
-		{
-		}
+		ReadUserListInfo(int32 InLocalUserNum, const FString& InListName, FOnReadFriendsListComplete InDelegate) : LocalUserNum(InLocalUserNum), ListName(InListName), Delegate(MoveTemp(InDelegate)) {}
 
-		void ExecuteDelegateIfBound(bool bWasSuccessful, const FString& ErrorStr) const
-		{
-			Delegate.ExecuteIfBound(LocalUserNum, bWasSuccessful, ListName, ErrorStr);
-		};
+		void ExecuteDelegateIfBound(bool bWasSuccessful, const FString& ErrorStr) const { Delegate.ExecuteIfBound(LocalUserNum, bWasSuccessful, ListName, ErrorStr); };
 	};
 
 	TMap<int32, TArray<ReadUserListInfo>> CachedReadUserListInfoForLocalUserMap;

@@ -23,7 +23,6 @@ void UEOWGameInstanceSubsystem::Deinitialize()
 	OnlineSubsystem = nullptr;
 }
 
-
 void UEOWGameInstanceSubsystem::GetUserToken(int32 LocalUserNum, FString& Token, FString& UserAccountString)
 {
 	if (!OnlineSubsystem) return;
@@ -37,7 +36,6 @@ void UEOWGameInstanceSubsystem::GetUserToken(int32 LocalUserNum, FString& Token,
 	}
 }
 
-
 void UEOWGameInstanceSubsystem::ValidateUserAuthToken(const FString& Token, const FString& AccountIDString) const
 {
 	if (!OnlineSubsystem) return;
@@ -47,8 +45,7 @@ void UEOWGameInstanceSubsystem::ValidateUserAuthToken(const FString& Token, cons
 
 	if (FEOSWrapperUserManager* UserManager = static_cast<FEOSWrapperUserManager*>(IdentityInterface.Get()))
 	{
-		TFunction<void(FString InToken, EOS_EpicAccountId AccountID, bool bSuccess)> Callback = [this, Token, AccountIDString](FString InToken, EOS_EpicAccountId AccountID, bool bSuccess)
-		{
+		TFunction<void(FString InToken, EOS_EpicAccountId AccountID, bool bSuccess)> Callback = [this, Token, AccountIDString](FString InToken, EOS_EpicAccountId AccountID, bool bSuccess) {
 			OnTokenValidationComplete.Broadcast(bSuccess, Token);
 		};
 		UserManager->ValidateUserAuthToken(Token, AccountIDString, Callback);

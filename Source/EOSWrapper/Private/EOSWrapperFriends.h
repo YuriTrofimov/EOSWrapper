@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 
 /**
- * 
+ *
  */
 class EOSWRAPPER_API EOSWrapperFriends
 {

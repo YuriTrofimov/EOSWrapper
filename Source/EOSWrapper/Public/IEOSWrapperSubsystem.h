@@ -12,8 +12,7 @@ using IEOSPlatformHandlePtr = TSharedPtr<class IEOSPlatformHandle, ESPMode::Thre
 /**
  *	OnlineSubsystemEOS - Implementation of the online subsystem for EOS services
  */
-class EOSWRAPPER_API IEOSWrapperSubsystem : 
-	public FOnlineSubsystemImpl
+class EOSWRAPPER_API IEOSWrapperSubsystem : public FOnlineSubsystemImpl
 {
 public:
 	IEOSWrapperSubsystem(FName InSubsystemName, FName InInstanceName) : FOnlineSubsystemImpl(InSubsystemName, InInstanceName) {}

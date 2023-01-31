@@ -26,6 +26,7 @@ public:
 
 	void GetUserToken(int32 LocalUserNum, FString& Token, FString& UserAccountString);
 	void ValidateUserAuthToken(const FString& Token, const FString& AccountIDString) const;
+
 protected:
 	class FEOSWrapperSubsystem* OnlineSubsystem;
 };

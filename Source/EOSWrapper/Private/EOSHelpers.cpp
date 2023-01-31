@@ -1,7 +1,6 @@
 ﻿// Copyright:       Copyright (C) 2023 Yuri Trofimov
 // Source Code:     https://github.com/YuriTrofimov/EOSWrapper
 
-
 #include "EOSHelpers.h"
 
 #if WITH_EOS_SDK
@@ -12,9 +11,7 @@
 #include "EOSWrapperPrivate.h"
 #include "EOSWrapperUserManager.h"
 
-void FEOSHelpers::PlatformAuthCredentials(EOS_Auth_Credentials &Credentials)
-{
-}
+void FEOSHelpers::PlatformAuthCredentials(EOS_Auth_Credentials& Credentials) {}
 
 void FEOSHelpers::PlatformTriggerLoginUI(FEOSWrapperSubsystem* EOSSubsystem, const int ControllerIndex, bool bShowOnlineOnly, bool bShowSkipButton, const FOnLoginUIClosedDelegate& Delegate)
 {
@@ -24,10 +21,7 @@ void FEOSHelpers::PlatformTriggerLoginUI(FEOSWrapperSubsystem* EOSSubsystem, con
 
 	const FUniqueNetIdPtr PlayerId = EOSSubsystem->UserManager->GetUniquePlayerId(ControllerIndex);
 
-	EOSSubsystem->ExecuteNextTick([PlayerId, ControllerIndex, Delegate]()
-	{
-		Delegate.ExecuteIfBound(PlayerId, ControllerIndex, FOnlineError(EOnlineErrorResult::NotImplemented));
-	});
+	EOSSubsystem->ExecuteNextTick([PlayerId, ControllerIndex, Delegate]() { Delegate.ExecuteIfBound(PlayerId, ControllerIndex, FOnlineError(EOnlineErrorResult::NotImplemented)); });
 }
 
 IEOSPlatformHandlePtr FEOSHelpers::CreatePlatform(EOS_Platform_Options& PlatformOptions)
@@ -44,13 +38,15 @@ void FEOSHelpers::ShowAccountPortalUI(FEOSWrapperSubsystem* InEOSSubsystem, cons
 {
 	check(InEOSSubsystem != nullptr);
 	FDelegateHandle* DelegateHandle = new FDelegateHandle;
-	*DelegateHandle = InEOSSubsystem->UserManager->AddOnLoginCompleteDelegate_Handle(ControllerIndex, FOnLoginCompleteDelegate::CreateRaw(this, &FEOSHelpers::OnAccountPortalLoginComplete, InEOSSubsystem, Delegate, DelegateHandle));
+	*DelegateHandle = InEOSSubsystem->UserManager->AddOnLoginCompleteDelegate_Handle(
+		ControllerIndex, FOnLoginCompleteDelegate::CreateRaw(this, &FEOSHelpers::OnAccountPortalLoginComplete, InEOSSubsystem, Delegate, DelegateHandle));
 
 	FOnlineAccountCredentials* Credentials = new FOnlineAccountCredentials(TEXT("accountportal"), TEXT(""), TEXT(""));
 	InEOSSubsystem->UserManager->Login(ControllerIndex, *Credentials);
 }
 
-void FEOSHelpers::OnAccountPortalLoginComplete(int ControllerIndex, bool bWasSuccessful, const FUniqueNetId& UserId, const FString& ErrorString, FEOSWrapperSubsystem* InEOSSubsystem, const FOnLoginUIClosedDelegate LoginUIClosedDelegate, FDelegateHandle* LoginDelegateHandle) const
+void FEOSHelpers::OnAccountPortalLoginComplete(int ControllerIndex, bool bWasSuccessful, const FUniqueNetId& UserId, const FString& ErrorString, FEOSWrapperSubsystem* InEOSSubsystem,
+	const FOnLoginUIClosedDelegate LoginUIClosedDelegate, FDelegateHandle* LoginDelegateHandle) const
 {
 	FOnlineError Error(bWasSuccessful);
 	Error.SetFromErrorCode(ErrorString);
@@ -61,4 +57,4 @@ void FEOSHelpers::OnAccountPortalLoginComplete(int ControllerIndex, bool bWasSuc
 	LoginUIClosedDelegate.ExecuteIfBound(UserId.AsShared(), ControllerIndex, Error);
 }
 
-#endif // WITH_EOS_SDK
+#endif	// WITH_EOS_SDK

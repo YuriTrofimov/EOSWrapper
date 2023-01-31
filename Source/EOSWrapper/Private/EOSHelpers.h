@@ -21,7 +21,7 @@ class FEOSHelpers
 public:
 	virtual ~FEOSHelpers() = default;
 
-	virtual void PlatformAuthCredentials(EOS_Auth_Credentials &Credentials);
+	virtual void PlatformAuthCredentials(EOS_Auth_Credentials& Credentials);
 	virtual void PlatformTriggerLoginUI(FEOSWrapperSubsystem* EOSSubsystem, const int ControllerIndex, bool bShowOnlineOnly, bool bShowSkipButton, const FOnLoginUIClosedDelegate& Delegate);
 	virtual IEOSPlatformHandlePtr CreatePlatform(EOS_Platform_Options& PlatformOptions);
 
@@ -31,7 +31,8 @@ protected:
 
 private:
 	/** Completion handler for ShowAccountPortalUI */
-	void OnAccountPortalLoginComplete(int ControllerIndex, bool bWasSuccessful, const FUniqueNetId& UserId, const FString& ErrorString, FEOSWrapperSubsystem* InEOSSubsystem, const FOnLoginUIClosedDelegate LoginUIClosedDelegate, FDelegateHandle* LoginDelegateHandle) const;
+	void OnAccountPortalLoginComplete(int ControllerIndex, bool bWasSuccessful, const FUniqueNetId& UserId, const FString& ErrorString, FEOSWrapperSubsystem* InEOSSubsystem,
+		const FOnLoginUIClosedDelegate LoginUIClosedDelegate, FDelegateHandle* LoginDelegateHandle) const;
 };
 
-#endif // WITH_EOS_SDK
+#endif	// WITH_EOS_SDK

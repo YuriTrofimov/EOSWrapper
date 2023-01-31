@@ -224,38 +224,25 @@ typedef TSharedRef<FOnlineUserPresence> FOnlineUserPresenceRef;
 /**
  * Implementation of FOnlineFriend methods that adds in the online user template to complete the interface
  */
-template<class BaseClass>
-class TOnlineFriendEOS :
-	public TOnlineUserEOS<BaseClass, IAttributeAccessInterface>
+template <class BaseClass>
+class TOnlineFriendEOS : public TOnlineUserEOS<BaseClass, IAttributeAccessInterface>
 {
 public:
-	TOnlineFriendEOS(const FUniqueNetIdEOSRef& InNetIdRef)
-		: TOnlineUserEOS<BaseClass, IAttributeAccessInterface>(InNetIdRef)
-	{
-	}
+	TOnlineFriendEOS(const FUniqueNetIdEOSRef& InNetIdRef) : TOnlineUserEOS<BaseClass, IAttributeAccessInterface>(InNetIdRef) {}
 
-// FOnlineFriend
+	// FOnlineFriend
 	/**
 	 * @return the current invite status of a friend wrt to user that queried
 	 */
-	virtual EInviteStatus::Type GetInviteStatus() const override
-	{
-		return InviteStatus;
-	}
+	virtual EInviteStatus::Type GetInviteStatus() const override { return InviteStatus; }
 
 	/**
 	 * @return presence info for an online friend
 	 */
-	virtual const FOnlineUserPresence& GetPresence() const override
-	{
-		return Presence;
-	}
-//~FOnlineFriend
+	virtual const FOnlineUserPresence& GetPresence() const override { return Presence; }
+	//~FOnlineFriend
 
-	void SetInviteStatus(EInviteStatus::Type InStatus)
-	{
-		InviteStatus = InStatus;
-	}
+	void SetInviteStatus(EInviteStatus::Type InStatus) { InviteStatus = InStatus; }
 
 	void SetPresence(FOnlineUserPresenceRef InPresence)
 	{
@@ -271,49 +258,34 @@ protected:
 /**
  * Implementation of FOnlineBlockedPlayer methods that adds in the online user template to complete the interface
  */
-template<class BaseClass>
-class TOnlineBlockedPlayerEOS :
-	public TOnlineUserEOS<BaseClass, IAttributeAccessInterface>
+template <class BaseClass>
+class TOnlineBlockedPlayerEOS : public TOnlineUserEOS<BaseClass, IAttributeAccessInterface>
 {
 public:
-	TOnlineBlockedPlayerEOS(const FUniqueNetIdEOSRef& InNetIdRef)
-		: TOnlineUserEOS<BaseClass, IAttributeAccessInterface>(InNetIdRef)
-	{
-	}
+	TOnlineBlockedPlayerEOS(const FUniqueNetIdEOSRef& InNetIdRef) : TOnlineUserEOS<BaseClass, IAttributeAccessInterface>(InNetIdRef) {}
 };
 
 /**
  * Implementation of FOnlineRecentPlayer methods that adds in the online user template to complete the interface
  */
-template<class BaseClass>
-class TOnlineRecentPlayerEOS :
-	public TOnlineUserEOS<BaseClass, IAttributeAccessInterface>
+template <class BaseClass>
+class TOnlineRecentPlayerEOS : public TOnlineUserEOS<BaseClass, IAttributeAccessInterface>
 {
 public:
-	TOnlineRecentPlayerEOS(const FUniqueNetIdEOSRef& InNetIdRef)
-		: TOnlineUserEOS<BaseClass, IAttributeAccessInterface>(InNetIdRef)
-	{
-	}
+	TOnlineRecentPlayerEOS(const FUniqueNetIdEOSRef& InNetIdRef) : TOnlineUserEOS<BaseClass, IAttributeAccessInterface>(InNetIdRef) {}
 
-// FOnlineRecentPlayer
+	// FOnlineRecentPlayer
 	/**
 	 * @return last time the player was seen by the current user
 	 */
-	virtual FDateTime GetLastSeen() const override
-	{
-		return LastSeenTime;
-	}
-//~FOnlineRecentPlayer
+	virtual FDateTime GetLastSeen() const override { return LastSeenTime; }
+	//~FOnlineRecentPlayer
 
-	void SetLastSeen(const FDateTime& InLastSeenTime)
-	{
-		LastSeenTime = InLastSeenTime;
-	}
+	void SetLastSeen(const FDateTime& InLastSeenTime) { LastSeenTime = InLastSeenTime; }
 
 protected:
 	FDateTime LastSeenTime;
 };
-
 
 /** Class to handle all callbacks generically using a lambda to process callback results */
 template <typename CallbackFuncType, typename CallbackType, typename OwningType>
@@ -358,48 +330,35 @@ namespace OSSInternalCallback
 {
 /** Create a callback for a non-SDK function that is tied to the lifetime of an arbitrary shared pointer. */
 template <typename DelegateType, typename OwnerType, typename... CallbackArgs>
-UE_NODISCARD DelegateType Create(const TSharedPtr<OwnerType, ESPMode::ThreadSafe>& InOwner,
-	const TFunction<void(CallbackArgs...)>& InUserCallback)
+UE_NODISCARD DelegateType Create(const TSharedPtr<OwnerType, ESPMode::ThreadSafe>& InOwner, const TFunction<void(CallbackArgs...)>& InUserCallback)
 {
-	const DelegateType& CheckOwnerThenExecute = DelegateType::CreateLambda(
-		[WeakOwner = TWeakPtr<OwnerType, ESPMode::ThreadSafe>(InOwner), InUserCallback](CallbackArgs... Payload) {
-			check(IsInGameThread());
-			TSharedPtr<OwnerType, ESPMode::ThreadSafe> Owner = WeakOwner.Pin();
-			if (Owner.IsValid())
-			{
-				InUserCallback(Payload...);
-			}
+	const DelegateType& CheckOwnerThenExecute = DelegateType::CreateLambda([WeakOwner = TWeakPtr<OwnerType, ESPMode::ThreadSafe>(InOwner), InUserCallback](CallbackArgs... Payload) {
+		check(IsInGameThread());
+		TSharedPtr<OwnerType, ESPMode::ThreadSafe> Owner = WeakOwner.Pin();
+		if (Owner.IsValid())
+		{
+			InUserCallback(Payload...);
+		}
 	});
 
 	return CheckOwnerThenExecute;
 }
-}
+}  // namespace OSSInternalCallback
 
 /**
  * Implementation of session information
  */
-class FOnlineSessionInfoEOS :
-	public FOnlineSessionInfo
+class FOnlineSessionInfoEOS : public FOnlineSessionInfo
 {
 protected:
 	/** Hidden on purpose */
-	FOnlineSessionInfoEOS& operator=(const FOnlineSessionInfoEOS& Src)
-	{
-		return *this;
-	}
+	FOnlineSessionInfoEOS& operator=(const FOnlineSessionInfoEOS& Src) { return *this; }
 
-	PACKAGE_SCOPE:
+	PACKAGE_SCOPE :
 		/** Constructor */
 		FOnlineSessionInfoEOS();
 
-	FOnlineSessionInfoEOS(const FOnlineSessionInfoEOS& Src)
-		: FOnlineSessionInfo(Src)
-		, HostAddr(Src.HostAddr)
-		, SessionId(Src.SessionId)
-		, SessionHandle(Src.SessionHandle)
-		, bIsFromClone(true)
-	{
-	}
+	FOnlineSessionInfoEOS(const FOnlineSessionInfoEOS& Src) : FOnlineSessionInfo(Src), HostAddr(Src.HostAddr), SessionId(Src.SessionId), SessionHandle(Src.SessionHandle), bIsFromClone(true) {}
 
 	FOnlineSessionInfoEOS(const FString& InHostIp, FUniqueNetIdStringRef UniqueNetId, EOS_HSessionDetails InSessionHandle);
 
@@ -420,35 +379,18 @@ protected:
 
 public:
 	virtual ~FOnlineSessionInfoEOS();
-	bool operator==(const FOnlineSessionInfoEOS& Other) const
-	{
-		return false;
-	}
-	virtual const uint8* GetBytes() const override
-	{
-		return nullptr;
-	}
-	virtual int32 GetSize() const override
-	{
-		return sizeof(uint64) + sizeof(TSharedPtr<class FInternetAddr>);
-	}
+	bool operator==(const FOnlineSessionInfoEOS& Other) const { return false; }
+	virtual const uint8* GetBytes() const override { return nullptr; }
+	virtual int32 GetSize() const override { return sizeof(uint64) + sizeof(TSharedPtr<class FInternetAddr>); }
 	virtual bool IsValid() const override
 	{
 		// LAN case
 		return HostAddr.IsValid() && HostAddr->IsValid();
 	}
-	virtual FString ToString() const override
-	{
-		return SessionId->ToString();
-	}
+	virtual FString ToString() const override { return SessionId->ToString(); }
 	virtual FString ToDebugString() const override
 	{
-		return FString::Printf(TEXT("HostIP: %s SessionId: %s"),
-			HostAddr.IsValid() ? *HostAddr->ToString(true) : TEXT("INVALID"),
-			*SessionId->ToDebugString());
+		return FString::Printf(TEXT("HostIP: %s SessionId: %s"), HostAddr.IsValid() ? *HostAddr->ToString(true) : TEXT("INVALID"), *SessionId->ToDebugString());
 	}
-	virtual const FUniqueNetId& GetSessionId() const override
-	{
-		return *SessionId;
-	}
+	virtual const FUniqueNetId& GetSessionId() const override { return *SessionId; }
 };

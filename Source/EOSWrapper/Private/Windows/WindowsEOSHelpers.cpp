@@ -15,9 +15,10 @@
 IEOSPlatformHandlePtr FWindowsEOSHelpers::CreatePlatform(EOS_Platform_Options& PlatformOptions)
 {
 #if WITH_EOS_RTC
-	const FTCHARToUTF8 Utf8XAudioPath(*IFileManager::Get().ConvertToAbsolutePathForExternalAppForRead(*FPaths::Combine(FPaths::EngineDir(), TEXT("Binaries/ThirdParty/Windows/XAudio2_9"), PLATFORM_64BITS ? TEXT("x64") : TEXT("x86"), TEXT("xaudio2_9redist.dll"))));
+	const FTCHARToUTF8 Utf8XAudioPath(*IFileManager::Get().ConvertToAbsolutePathForExternalAppForRead(
+		*FPaths::Combine(FPaths::EngineDir(), TEXT("Binaries/ThirdParty/Windows/XAudio2_9"), PLATFORM_64BITS ? TEXT("x64") : TEXT("x86"), TEXT("xaudio2_9redist.dll"))));
 
-	EOS_Windows_RTCOptions WindowsRtcOptions = { 0 };
+	EOS_Windows_RTCOptions WindowsRtcOptions = {0};
 	WindowsRtcOptions.ApiVersion = EOS_WINDOWS_RTCOPTIONS_API_LATEST;
 	static_assert(EOS_WINDOWS_RTCOPTIONS_API_LATEST == 1, "EOS_Windows_RTCOptions updated, check new fields");
 	WindowsRtcOptions.XAudio29DllPath = Utf8XAudioPath.Get();
@@ -27,9 +28,9 @@ IEOSPlatformHandlePtr FWindowsEOSHelpers::CreatePlatform(EOS_Platform_Options& P
 	{
 		RTCOptions->PlatformSpecificOptions = &WindowsRtcOptions;
 	}
-#endif // WITH_EOS_RTC
+#endif	// WITH_EOS_RTC
 
 	return FEOSHelpers::CreatePlatform(PlatformOptions);
 }
 
-#endif // WITH_EOS_SDK
+#endif	// WITH_EOS_SDK

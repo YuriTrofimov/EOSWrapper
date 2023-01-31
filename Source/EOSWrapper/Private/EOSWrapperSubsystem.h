@@ -107,6 +107,7 @@ public:
 	FEOSWrapperSessionManagerPtr SessionManager;
 	IEOSPlatformHandlePtr EOSPlatformHandle;
 	static FPlatformEOSHelpersPtr EOSHelpersPtr;
+
 private:
 	bool PlatformCreate();
 

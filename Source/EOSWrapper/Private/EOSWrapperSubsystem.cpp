@@ -42,7 +42,6 @@ struct FEOSPlatformOptions : public EOS_Platform_Options
 	char EncryptionKeyAnsi[EOS_ENCRYPTION_KEY_MAX_BUFFER_LEN];
 };
 
-
 FEOSWrapperSubsystem::FEOSWrapperSubsystem(FName InInstanceName)
 	: IEOSWrapperSubsystem(EOS_SUBSYSTEM, InInstanceName)
 {
@@ -71,10 +70,11 @@ IVoiceChatUser* FEOSWrapperSubsystem::GetVoiceChatUserInterface(const FUniqueNet
 	// 		else
 	// 		{
 	// 			FEOSVoiceChatUser* VoiceChatUser = static_cast<FEOSVoiceChatUser*>(VoiceChatInterface->CreateUser());
-	// 			VoiceChatUser->Login(UserManager->GetPlatformUserIdFromUniqueNetId(LocalUserId), LexToString(FUniqueNetIdEOS::Cast(LocalUserId).GetProductUserId()), FString(), FOnVoiceChatLoginCompleteDelegate());
+	// 			VoiceChatUser->Login(UserManager->GetPlatformUserIdFromUniqueNetId(LocalUserId), LexToString(FUniqueNetIdEOS::Cast(LocalUserId).GetProductUserId()), FString(),
+	// FOnVoiceChatLoginCompleteDelegate());
 	//
-	// 			const FOnlineSubsystemEOSVoiceChatUserWrapperRef& Wrapper = LocalVoiceChatUsers.Emplace(LocalUserId.AsShared(), MakeShared<FOnlineSubsystemEOSVoiceChatUserWrapper, ESPMode::ThreadSafe>(*VoiceChatUser));
-	// 			Result = &Wrapper.Get();
+	// 			const FOnlineSubsystemEOSVoiceChatUserWrapperRef& Wrapper = LocalVoiceChatUsers.Emplace(LocalUserId.AsShared(), MakeShared<FOnlineSubsystemEOSVoiceChatUserWrapper,
+	// ESPMode::ThreadSafe>(*VoiceChatUser)); 			Result = &Wrapper.Get();
 	// 		}
 	// 	}
 	// #endif // WITH_EOS_RTC
@@ -251,6 +251,11 @@ bool FEOSWrapperSubsystem::Init()
 	// We set the product id
 	FString ArtifactName;
 	FParse::Value(FCommandLine::Get(), TEXT("EpicApp="), ArtifactName);
+	if (!ArtifactName.IsEmpty())
+	{
+		UE_LOG_ONLINE(Warning, TEXT("Using artifact (%s)"), *ArtifactName);
+	}
+
 	FEOSArtifactSettings ArtifactSettings;
 	if (UEOSWrapperSettings::GetSettingsForArtifact(ArtifactName, ArtifactSettings))
 	{
@@ -438,6 +443,10 @@ bool FEOSWrapperSubsystem::PlatformCreate()
 {
 	FString ArtifactName;
 	FParse::Value(FCommandLine::Get(), TEXT("EpicApp="), ArtifactName);
+	if (!ArtifactName.IsEmpty())
+	{
+		UE_LOG_ONLINE(Warning, TEXT("Using artifact (%s)"), *ArtifactName);
+	}
 	// Find the settings for this artifact
 	FEOSArtifactSettings ArtifactSettings;
 	if (!UEOSWrapperSettings::GetSettingsForArtifact(ArtifactName, ArtifactSettings))
@@ -483,12 +492,12 @@ bool FEOSWrapperSubsystem::PlatformCreate()
 	FCStringAnsi::Strncpy(PlatformOptions.CacheDirectoryAnsi, TCHAR_TO_UTF8(*CacheDir), EOS_OSS_STRING_BUFFER_LENGTH);
 	FCStringAnsi::Strncpy(PlatformOptions.EncryptionKeyAnsi, TCHAR_TO_UTF8(*ArtifactSettings.EncryptionKey), EOS_ENCRYPTION_KEY_MAX_BUFFER_LEN);
 
-#if WITH_EOS_RTC
-	EOS_Platform_RTCOptions RtcOptions = { 0 };
-	RtcOptions.ApiVersion = EOS_PLATFORM_RTCOPTIONS_API_LATEST;
-	RtcOptions.PlatformSpecificOptions = nullptr;
-	PlatformOptions.RTCOptions = &RtcOptions;
-#endif
+	// #if WITH_EOS_RTC
+	// 	EOS_Platform_RTCOptions RtcOptions = {0};
+	// 	RtcOptions.ApiVersion = EOS_PLATFORM_RTCOPTIONS_API_LATEST;
+	// 	RtcOptions.PlatformSpecificOptions = nullptr;
+	// 	PlatformOptions.RTCOptions = &RtcOptions;
+	// #endif
 
 	IEOSSDKManager* SDKManager = IEOSSDKManager::Get();
 	if (ensure(SDKManager))

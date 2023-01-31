@@ -17,4 +17,4 @@ public:
 
 using FPlatformEOSHelpers = FWindowsEOSHelpers;
 
-#endif // WITH_EOS_SDK
+#endif	// WITH_EOS_SDK

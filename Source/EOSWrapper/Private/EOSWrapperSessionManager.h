@@ -25,41 +25,29 @@ struct FSessionSearchEOS
 {
 	EOS_HSessionSearch SearchHandle;
 
-	FSessionSearchEOS(EOS_HSessionSearch InSearchHandle)
-		: SearchHandle(InSearchHandle)
-	{
-	}
+	FSessionSearchEOS(EOS_HSessionSearch InSearchHandle) : SearchHandle(InSearchHandle) {}
 
-	virtual ~FSessionSearchEOS()
-	{
-		EOS_SessionSearch_Release(SearchHandle);
-	}
+	virtual ~FSessionSearchEOS() { EOS_SessionSearch_Release(SearchHandle); }
 };
 
 struct FLobbyDetailsEOS : FNoncopyable
 {
 	EOS_HLobbyDetails LobbyDetailsHandle;
 
-	FLobbyDetailsEOS(EOS_HLobbyDetails InLobbyDetailsHandle)
-		: LobbyDetailsHandle(InLobbyDetailsHandle)
-	{
-	}
+	FLobbyDetailsEOS(EOS_HLobbyDetails InLobbyDetailsHandle) : LobbyDetailsHandle(InLobbyDetailsHandle) {}
 
-	virtual ~FLobbyDetailsEOS()
-	{
-		EOS_LobbyDetails_Release(LobbyDetailsHandle);
-	}
+	virtual ~FLobbyDetailsEOS() { EOS_LobbyDetails_Release(LobbyDetailsHandle); }
 };
 
 class FEOSWrapperSubsystem;
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnLobbyCreatedDelegate, const FName&)
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnLobbyUpdatedDelegate, const FName&)
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnLobbyCreatedDelegate, const FName&) DECLARE_MULTICAST_DELEGATE_OneParam(FOnLobbyUpdatedDelegate, const FName&)
 
-/**
- *
- */
-class EOSWRAPPER_API FEOSWrapperSessionManager : public IOnlineSession, public TSharedFromThis<FEOSWrapperSessionManager, ESPMode::ThreadSafe>
+	/**
+	 *
+	 */
+	class EOSWRAPPER_API FEOSWrapperSessionManager : public IOnlineSession,
+													 public TSharedFromThis<FEOSWrapperSessionManager, ESPMode::ThreadSafe>
 {
 public:
 	FEOSWrapperSessionManager() = delete;
@@ -74,14 +62,14 @@ public:
 	virtual bool EndSession(FName SessionName) override;
 	virtual bool DestroySession(FName SessionName, const FOnDestroySessionCompleteDelegate& CompletionDelegate = FOnDestroySessionCompleteDelegate()) override;
 	virtual bool IsPlayerInSession(FName SessionName, const FUniqueNetId& UniqueId) override;
-	virtual bool StartMatchmaking(const TArray<FUniqueNetIdRef>& LocalPlayers, FName SessionName, const FOnlineSessionSettings& NewSessionSettings,
-		TSharedRef<FOnlineSessionSearch>& SearchSettings) override;
+	virtual bool StartMatchmaking(
+		const TArray<FUniqueNetIdRef>& LocalPlayers, FName SessionName, const FOnlineSessionSettings& NewSessionSettings, TSharedRef<FOnlineSessionSearch>& SearchSettings) override;
 	virtual bool CancelMatchmaking(int32 SearchingPlayerNum, FName SessionName) override;
 	virtual bool CancelMatchmaking(const FUniqueNetId& SearchingPlayerId, FName SessionName) override;
 	virtual bool FindSessions(int32 SearchingPlayerNum, const TSharedRef<FOnlineSessionSearch>& SearchSettings) override;
 	virtual bool FindSessions(const FUniqueNetId& SearchingPlayerId, const TSharedRef<FOnlineSessionSearch>& SearchSettings) override;
-	virtual bool FindSessionById(const FUniqueNetId& SearchingUserId, const FUniqueNetId& SessionId, const FUniqueNetId& FriendId,
-		const FOnSingleSessionResultCompleteDelegate& CompletionDelegate) override;
+	virtual bool FindSessionById(
+		const FUniqueNetId& SearchingUserId, const FUniqueNetId& SessionId, const FUniqueNetId& FriendId, const FOnSingleSessionResultCompleteDelegate& CompletionDelegate) override;
 	virtual bool CancelFindSessions() override;
 	virtual bool PingSearchResults(const FOnlineSessionSearchResult& SearchResult) override;
 	virtual bool JoinSession(int32 PlayerNum, FName SessionName, const FOnlineSessionSearchResult& DesiredSession) override;
@@ -125,7 +113,7 @@ public:
 
 private:
 	EOS_HLobby LobbyHandle;
-	
+
 	void RegisterLobbyNotifications();
 	void RegisterLocalPlayers(class FNamedOnlineSession* Session);
 
@@ -138,8 +126,8 @@ private:
 	FCallbackBase* LobbySendInviteCallback;
 
 	uint32 FindLobbySession(int32 SearchingPlayerNum, const TSharedRef<FOnlineSessionSearch>& SearchSettings);
-	void StartLobbySearch(int32 SearchingPlayerNum, EOS_HLobbySearch LobbySearchHandle, const TSharedRef<FOnlineSessionSearch>& SearchSettings,
-		const FOnSingleSessionResultCompleteDelegate& CompletionDelegate);
+	void StartLobbySearch(
+		int32 SearchingPlayerNum, EOS_HLobbySearch LobbySearchHandle, const TSharedRef<FOnlineSessionSearch>& SearchSettings, const FOnSingleSessionResultCompleteDelegate& CompletionDelegate);
 	uint32 CreateLobbySession(int32 HostingPlayerNum, FNamedOnlineSession* Session);
 	uint32 UpdateLobbySession(FNamedOnlineSession* Session);
 	uint32 JoinLobbySession(int32 PlayerNum, FNamedOnlineSession* Session, const FOnlineSession* SearchSession);
@@ -189,7 +177,6 @@ private:
 	typedef TEOSCallback<EOS_Sessions_OnUpdateSessionCallback, EOS_Sessions_UpdateSessionCallbackInfo, FEOSWrapperSessionManager> FUpdateSessionCallback;
 	uint32 SharedSessionUpdate(EOS_HSessionModification SessionModHandle, FNamedOnlineSession* Session, FUpdateSessionCallback* Callback);
 
-
 	void BeginSessionAnalytics(FNamedOnlineSession* Session);
 	void EndSessionAnalytics();
 
@@ -221,7 +208,7 @@ private:
 	uint32 FindEOSSession(int32 SearchingPlayerNum, const TSharedRef<FOnlineSessionSearch>& SearchSettings);
 	bool SendEOSSessionInvite(FName SessionName, EOS_ProductUserId SenderId, EOS_ProductUserId ReceiverId);
 	void FindEOSSessionById(int32 SearchingPlayerNum, const FUniqueNetId& SessionId, const FOnSingleSessionResultCompleteDelegate& CompletionDelegate);
-	
+
 	/** Cached pointer to owning subsystem */
 	FEOSWrapperSubsystem* EOSSubsystem;
 	TArray<TSharedRef<FLobbyDetailsEOS>> PendingLobbySearchResults;

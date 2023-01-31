@@ -19,13 +19,9 @@
 class FOnlineFactoryEOSWrapper : public IOnlineFactory
 {
 public:
-	FOnlineFactoryEOSWrapper()
-	{
-	}
+	FOnlineFactoryEOSWrapper() {}
 
-	virtual ~FOnlineFactoryEOSWrapper()
-	{
-	}
+	virtual ~FOnlineFactoryEOSWrapper() {}
 
 	virtual IOnlineSubsystemPtr CreateSubsystem(FName InstanceName)
 	{
