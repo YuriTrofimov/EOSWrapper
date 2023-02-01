@@ -25,7 +25,10 @@ struct FSessionSearchEOS
 {
 	EOS_HSessionSearch SearchHandle;
 
-	FSessionSearchEOS(EOS_HSessionSearch InSearchHandle) : SearchHandle(InSearchHandle) {}
+	FSessionSearchEOS(EOS_HSessionSearch InSearchHandle)
+		: SearchHandle(InSearchHandle)
+	{
+	}
 
 	virtual ~FSessionSearchEOS() { EOS_SessionSearch_Release(SearchHandle); }
 };
@@ -34,20 +37,22 @@ struct FLobbyDetailsEOS : FNoncopyable
 {
 	EOS_HLobbyDetails LobbyDetailsHandle;
 
-	FLobbyDetailsEOS(EOS_HLobbyDetails InLobbyDetailsHandle) : LobbyDetailsHandle(InLobbyDetailsHandle) {}
+	FLobbyDetailsEOS(EOS_HLobbyDetails InLobbyDetailsHandle)
+		: LobbyDetailsHandle(InLobbyDetailsHandle)
+	{
+	}
 
 	virtual ~FLobbyDetailsEOS() { EOS_LobbyDetails_Release(LobbyDetailsHandle); }
 };
 
 class FEOSWrapperSubsystem;
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnLobbyCreatedDelegate, const FName&) DECLARE_MULTICAST_DELEGATE_OneParam(FOnLobbyUpdatedDelegate, const FName&)
-
-	/**
-	 *
-	 */
-	class EOSWRAPPER_API FEOSWrapperSessionManager : public IOnlineSession,
-													 public TSharedFromThis<FEOSWrapperSessionManager, ESPMode::ThreadSafe>
+/**
+ *
+ */
+class EOSWRAPPER_API FEOSWrapperSessionManager
+	: public IOnlineSession,
+	  public TSharedFromThis<FEOSWrapperSessionManager, ESPMode::ThreadSafe>
 {
 public:
 	FEOSWrapperSessionManager() = delete;
@@ -107,9 +112,6 @@ public:
 	void Initialize(const FString& InBucketId);
 	/** Session tick for various background tasks */
 	void Tick(float DeltaTime);
-
-	FOnLobbyCreatedDelegate OnLobbyCreated;
-	FOnLobbyUpdatedDelegate OnLobbyUpdated;
 
 private:
 	EOS_HLobby LobbyHandle;

@@ -3666,16 +3666,15 @@ void FEOSWrapperSessionManager::AddLobbyAttribute(EOS_HLobbyModification LobbyMo
 
 void FEOSWrapperSessionManager::AddLobbyMemberAttribute(EOS_HLobbyModification LobbyModificationHandle, const EOS_Lobby_AttributeData* Attribute)
 {
-	EOS_LobbyModification_AddAttributeOptions Options = {};
-	Options.ApiVersion = EOS_LOBBYMODIFICATION_ADDATTRIBUTE_API_LATEST;
+	EOS_LobbyModification_AddMemberAttributeOptions Options = { };
+	Options.ApiVersion = EOS_LOBBYMODIFICATION_ADDMEMBERATTRIBUTE_API_LATEST;
 	Options.Visibility = EOS_ELobbyAttributeVisibility::EOS_LAT_PUBLIC;
 	Options.Attribute = Attribute;
 
-	EOS_EResult ResultCode = EOS_LobbyModification_AddAttribute(LobbyModificationHandle, &Options);
+	EOS_EResult ResultCode = EOS_LobbyModification_AddMemberAttribute(LobbyModificationHandle, &Options);
 	if (ResultCode != EOS_EResult::EOS_Success)
 	{
-		UE_LOG_ONLINE_SESSION(Error, TEXT("[FEOSWrapperSessionManager::AddLobbyAttribute] LobbyModification_AddAttribute for attribute name (%s) not successful. Finished with EOS_EResult %s"),
-			*FString(Attribute->Key), ANSI_TO_TCHAR(EOS_EResult_ToString(ResultCode)));
+		UE_LOG_ONLINE_SESSION(Error, TEXT("[FOnlineSessionEOS::AddLobbyMemberAttribute] LobbyModification_AddMemberAttribute for attribute name (%s) not successful. Finished with EOS_EResult %s"), *FString(Attribute->Key), ANSI_TO_TCHAR(EOS_EResult_ToString(ResultCode)));
 	}
 }
 
